@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
+import 'package:path/path.dart';
+import 'package:practice_app/businessCard.dart';
 import 'package:practice_app/contacts.dart';
 import 'package:practice_app/profile.dart';
 import 'package:practice_app/search.dart';
 import 'package:practice_app/events.dart';
 import 'package:practice_app/notes.dart';
 import 'package:practice_app/settings.dart';
+import 'package:sqflite/sqflite.dart';
 
 
 void main() => runApp(MyApp());
@@ -36,6 +40,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final Drawer drawer = const Drawer();
 
+  final myDB = BusinessCard.instance;
+
+  final database = openDatabase(join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'), version: 1);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,14 +52,59 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('Welcome to your virtual business card app!')
+            Text('Welcome to your virtual business card app!'),
+            RaisedButton(
+              child: Text('query', style: TextStyle(fontSize: 20),),
+              onPressed: () {_query();},
+            ),
           ],
         ),
       ),
       drawer: MyDrawer()
     );
   }
+  Future<List<BCard>> _query() async {
+    final Database myDB = await database;
+    final allRows = await myDB.query('business_card');
+    //print("printing all rows:");
+    //print(allRows.length);
+    return List.generate(allRows.length, (i) {
+      // my issue is that for some reason card_id and mobile_number is an int
+      // var v = allRows[i]['mobile_number'];
+      // print(v);
+      // if (v is String ) print("String");
+      BCard a = new BCard(allRows[i]['card_id'], allRows[i]['f_name'], allRows[i]['l_name'],
+        allRows[i]['mobile_number'],
+        allRows[i]['email_addr'], allRows[i]['street_addr'],
+        allRows[i]['website'], allRows[i]['linked_in'], 
+        allRows[i]['personal'], allRows[i]['notes'], );
+      //print(a.personal);
+      return (a);
+    });
+  }
 }
+
+
+
+  // this method below was almost working, but list.generate isnt working
+  // Future<List<BCard>> _query() async {
+  //   final myDB = BusinessCard.instance;
+  //   final allRows = await myDB.queryAllRows();
+  //   return List.generate(allRows.length, (i) {
+  //     BCard a = new BCard(allRows.first['card_id'], allRows.first['f_name'], allRows.first['l_name'],
+  //      allRows.first['mobile_number'], allRows.first['email_addr'], allRows.first['street_addr'],
+  //       allRows.first['website'], allRows.first['linked_in'], allRows.first['personal'], allRows.first['notes']);
+  //     return (a);
+  //   });
+  //   print('query all rows:');
+  //   allRows.forEach((row) => print(row));
+  //   print("PRINT QUERYFIRSTROW");
+  //   final firstRow = (await myDB.queryFirstRow());
+  //   Map<String, dynamic> map = firstRow.first;
+  //   print(map);
+  //   print(map['card_id']);
+  // }
+
 
 class MyDrawer extends StatelessWidget {
   @override

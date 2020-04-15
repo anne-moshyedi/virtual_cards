@@ -30,6 +30,19 @@ class Profile extends StatelessWidget {
 
 
 class ContactCard extends StatelessWidget {
+  
+  final String card_id;
+  final String f_name;
+  final String l_name;
+  final String mobile_number;
+  final String email_addr;
+  final String street_addr;
+  final String website;
+  final String linked_in;
+  final String personal;
+  final String notes;
+
+  const ContactCard({Key key, this.card_id, this.f_name, this.l_name, this.mobile_number, this.email_addr, this.street_addr, this.website, this.linked_in, this.personal, this.notes}) : super(key: key);
 
     void _launchUrl(String url) async{
     if(await canLaunch(url)){

@@ -4,11 +4,12 @@ import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:practice_app/businessCard.dart';
 import 'package:practice_app/main.dart';
+import 'package:practice_app/notes.dart';
 import 'package:practice_app/profile.dart';
 import 'package:sqflite/sqlite_api.dart';
+import 'package:practice_app/dogs.dart';
 
 class Contacts extends StatelessWidget {
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,23 +39,6 @@ class Contacts extends StatelessWidget {
           ),
         drawer: MyDrawer(),
     );
-      // body: new Container(
-      //   height: 100,
-      //   child: new Column(
-      //     children: <Widget>[
-      //       ContactList(),
-      //       SafeArea(
-      //         child: Padding(
-      //           padding: const EdgeInsets.symmetric(horizontal: 20),
-      //             child: SearchBar(),
-      //           ),
-      //         )
-      //       ],
-      //     )
-      // ),
-        // drawer: MyDrawer(),
-    // );
-  //      if I want to use .builder, take out padding and separatorBuilder
   }
 
 
@@ -62,26 +46,37 @@ class Contacts extends StatelessWidget {
 
 class ContactList extends StatelessWidget{
   
-  final myDB = BusinessCard.instance;
+  static final myDB = BusinessCard.instance;
 
-  //final contactsFromDB = query;
+  //Future<Map<String, dynamic>> maps = myDB.queryAllRows();
   
   @override
   Widget build(BuildContext context) {
-    // var futureBuilder = new FutureBuilder (
-    //   builder: myDB.queryAllRows(),
-    //   )
-    
-   // return create listview
-
-    return ListView.separated(
-      padding: const EdgeInsets.all(2),
-      itemCount: 10,
-      itemBuilder: (BuildContext context, int index) {
-        return ContactCard();
-      },
-      separatorBuilder: (BuildContext contect, int index) => const Divider()
+    return FutureBuilder<String>(
+      future: myDB.queryFirstRow(),
+      builder: (context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.none:
+            return Text("none");
+          case ConnectionState.active:
+          case ConnectionState.waiting:
+            return Text("active and maybe waiting");
+          case ConnectionState.done:
+            return Text("snapshot.data['card_id']");
+          default:
+            return Text("done");
+        }
+      }
     );
+    
+    // ListView.separated(
+    //   padding: const EdgeInsets.all(2),
+    //   itemCount: _countRows(),
+    //   itemBuilder: (BuildContext context, int index) {
+    //     return ContactCard(card_id: 'ok');
+    //   },
+    //   separatorBuilder: (BuildContext contect, int index) => const Divider()
+    // );
   }
   Future<int> _countRows() async {
     // Assuming that the number of rows is the id for the last row.

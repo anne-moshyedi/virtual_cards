@@ -6,6 +6,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 
+  
+
 class BusinessCard {
 
   static final _databaseName = "practice_app_data.db";
@@ -61,27 +63,70 @@ class BusinessCard {
 
     Future<List<Map<String, dynamic>>> queryAllRows() async {
     Database db = await instance.db;
+    //print(db.query(table));
     return await db.query(table);
   }
+
+  Future<dynamic> queryFirstRow() async {
+    Database db = await instance.db;
+    //print(db.rawQuery('''SELECT * FROM business_card'''));
+    Future<dynamic> firstItem = (db.rawQuery("SELECT * FROM business_card WHERE card_id = '1234'"));
+    //print(firstItem);
+    return firstItem;
+  }
+
+  // String queryFirstRow1() {
+  //   String returnItem = queryFirstRow1().toString();
+  //   //print("PRINTING RETURNITEM");
+  //   print(returnItem);
+  //   return returnItem;
+  // }
+
+
+  //   Future<List<String>> _getData(map) async {
+  //   var values = new List<String>();
+  //   //now i want to convert the future list map to a future list
+  
+
+  //   await new Future.delayed(new Duration(seconds: 5));
+
+
+  //   return values;
+  // }
+
 
     Future<int> queryRowCount() async {
     Database db = await instance.db;
     return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $table'));
   }
+
 }
+
 
 
   // void readDB() async {
 
-
-  //   final Future<Database> database = openDatabase(join(await getDatabasesPath(), 'practice_app_data.db'),);
-    
+  //   final database = openDatabase(
+  //   // Set the path to the database. Note: Using the `join` function from the
+  //   // `path` package is best practice to ensure the path is correctly
+  //   // constructed for each platform.
+  //   join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'),
+  //   // When the database is first created, create a table to store dogs.
+  //   onCreate: (db, version) {
+  //     return db.execute(
+  //       "CREATE TABLE dogs(id INTEGER PRIMARY KEY, name TEXT, age INTEGER)",
+  //     );
+  //   },
+  //   // Set the version. This executes the onCreate function and provides a
+  //   // path to perform database upgrades and downgrades.
+  //   version: 1,
+  // );
   //   Future<List<BusinessCard>> cards() async {
   //     final Database db = await database;
   //     final List<Map<String, dynamic>> maps = await db.query('business_cards');
   //     return List.generate(maps.length, (i) {
-  //       return BusinessCard(
-  //         cardId: maps[i]['card_id'],
+  //       return BCard(
+  //         card_id: maps[i]['card_id'],
   //         f_name: maps[i]['card_id'],
   //         l_name: maps[i]['card_id'],
   //         mobile_number: maps[i]['card_id'],
@@ -92,7 +137,42 @@ class BusinessCard {
   //         personal: maps[i]['card_id'],
   //         notes:  maps[i]['card_id'],
   //       );
-  //     };
-  //   }
+  //   });
+  //  }
   // }
 
+
+
+class BCard {
+  final String card_id;
+  final String f_name;
+  final String l_name;
+  final String mobile_number;
+  final String email_addr;
+  final String street_addr;
+  final String website;
+  final String linked_in;
+  final String personal;
+  final String notes;
+
+  BCard(this.card_id, this.f_name, this.l_name, this.mobile_number, this.email_addr, this.street_addr, this.website, this.linked_in, this.personal, this.notes);
+
+  Map<String, dynamic> toMap() {
+    return {
+      'card_id': card_id,
+      'f_name': f_name,
+      'l_name': l_name,
+      'mobile_number': mobile_number,
+      'email_addr': email_addr,
+      'street_addr': street_addr,
+      'website': website,
+      'linked_in': linked_in,
+      'personal': personal,
+      'notes': notes,
+    };
+  }
+  @override
+  String toString() {
+    return 'BCard{card_id: $card_id, f_name: $f_name, l_name: $l_name, mobile_number: $mobile_number, email_addr: $email_addr, street_addr: $street_addr, website: $website, linked_in: $linked_in, personal: $personal, notes: $notes}';
+  }
+}
