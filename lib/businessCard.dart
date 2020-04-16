@@ -1,9 +1,12 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:practice_app/profile.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:practice_app/contactExpanded.dart';
 
 
   
@@ -143,7 +146,7 @@ class BusinessCard {
 
 
 
-class BCard {
+class BCard extends StatelessWidget{
   final String card_id;
   final String f_name;
   final String l_name;
@@ -171,8 +174,89 @@ class BCard {
       'notes': notes,
     };
   }
-  @override
-  String toString() {
-    return 'BCard{card_id: $card_id, f_name: $f_name, l_name: $l_name, mobile_number: $mobile_number, email_addr: $email_addr, street_addr: $street_addr, website: $website, linked_in: $linked_in, personal: $personal, notes: $notes}';
+  // @override
+  // String toString() {
+  //   return 'BCard{card_id: $card_id, f_name: $f_name, l_name: $l_name, mobile_number: $mobile_number, email_addr: $email_addr, street_addr: $street_addr, website: $website, linked_in: $linked_in, personal: $personal, notes: $notes}';
+  // }
+
+  void _launchUrl(String url) async{
+    if(await canLaunch(url)){
+      await launch(url);
+    }
+    else{
+      throw 'Could not open URL';
+    }
   }
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      // When the user taps a contact, take them to the full contact page.
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ContactExpanded(contactInfo: 
+          ["Name", '$f_name $l_name', "Mobile", '$mobile_number', "Email", "$email_addr", 
+          "Address", "$street_addr", 
+          "LinkedIn", "$linked_in",
+          "Website", "$website",
+          "Notes", "$notes"] )),//List<String>.generate(10, (i) => "Item $i"),)),
+        );
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Icon(Icons.account_circle, size: 50),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '$f_name $l_name',
+                  style: Theme.of(context).textTheme.headline,
+                ),
+                Text(
+                  'Software Engineer',
+                )
+              ],
+            ),
+          ],
+        ),
+        SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        ),
+        SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            // mailto and tell don't work on simulator. need to run on physical device.
+            IconButton(
+              icon: Icon(Icons.email),
+              onPressed: () {_launchUrl('mailto:$email_addr');},
+            ),
+            IconButton(
+              icon: Icon(Icons.local_phone),
+              onPressed: () {_launchUrl('tel:$mobile_number');},
+            ),
+            IconButton(
+              icon: Icon(Icons.device_hub),
+              onPressed: () {_launchUrl('$linked_in');},
+            ),
+            IconButton(
+              icon: Icon(Icons.public),
+              onPressed: () {_launchUrl('$website');},
+            ),
+          ],
+        ),
+      ],
+      ),
+    );
+  }
+
 }

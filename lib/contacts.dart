@@ -1,11 +1,11 @@
-import 'dart:collection';
-
 import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:practice_app/businessCard.dart';
 import 'package:practice_app/main.dart';
 import 'package:practice_app/notes.dart';
 import 'package:practice_app/profile.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:sqflite/sqlite_api.dart';
 import 'package:practice_app/dogs.dart';
 
@@ -52,8 +52,8 @@ class ContactList extends StatelessWidget{
   
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<String>(
-      future: myDB.queryFirstRow(),
+    return FutureBuilder<List<BCard>>(
+      future: _getInfo(),
       builder: (context, snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.none:
@@ -62,7 +62,17 @@ class ContactList extends StatelessWidget{
           case ConnectionState.waiting:
             return Text("active and maybe waiting");
           case ConnectionState.done:
-            return Text("snapshot.data['card_id']");
+            return ListView.separated(
+                padding: const EdgeInsets.all(2),
+                itemCount: snapshot.data.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                    //height: 50,
+                    child: Center(child: snapshot.data[index]),
+                  );
+                },
+                separatorBuilder: (BuildContext contect, int index) => const Divider()
+              );
           default:
             return Text("done");
         }
@@ -214,3 +224,24 @@ class CustomSearchDelegate extends SearchDelegate {
   }
 
 }
+
+  Future<List<BCard>> _getInfo() async {
+    final database = openDatabase(join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'), version: 1);
+    final Database myDB = await database;
+    final allRows = await myDB.query('business_card');
+    //print("printing all rows:");
+    //print(allRows.length);
+    return List.generate(allRows.length, (i) {
+      // my issue is that for some reason card_id and mobile_number is an int
+      // var v = allRows[i]['mobile_number'];
+      // print(v);
+      // if (v is String ) print("String");
+      BCard a = new BCard(allRows[i]['card_id'], allRows[i]['f_name'], allRows[i]['l_name'],
+        allRows[i]['mobile_number'],
+        allRows[i]['email_addr'], allRows[i]['street_addr'],
+        allRows[i]['website'], allRows[i]['linked_in'], 
+        allRows[i]['personal'], allRows[i]['notes'], );
+      //print(a.personal);
+      return (a);
+    });
+  }
