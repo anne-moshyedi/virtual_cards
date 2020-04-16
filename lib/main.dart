@@ -53,35 +53,36 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text('Welcome to your virtual business card app!'),
-            RaisedButton(
-              child: Text('query', style: TextStyle(fontSize: 20),),
-              onPressed: () {_query();},
-            ),
+            // RaisedButton(
+            //   child: Text('query', style: TextStyle(fontSize: 20),),
+            //   onPressed: () {},
+            // ),
           ],
         ),
       ),
       drawer: MyDrawer()
     );
   }
-  Future<List<BCard>> _query() async {
-    final Database myDB = await database;
-    final allRows = await myDB.query('business_card');
-    //print("printing all rows:");
-    //print(allRows.length);
-    return List.generate(allRows.length, (i) {
-      // my issue is that for some reason card_id and mobile_number is an int
-      // var v = allRows[i]['mobile_number'];
-      // print(v);
-      // if (v is String ) print("String");
-      BCard a = new BCard(allRows[i]['card_id'], allRows[i]['f_name'], allRows[i]['l_name'],
-        allRows[i]['mobile_number'],
-        allRows[i]['email_addr'], allRows[i]['street_addr'],
-        allRows[i]['website'], allRows[i]['linked_in'], 
-        allRows[i]['personal'], allRows[i]['notes'], );
-      //print(a.personal);
-      return (a);
-    });
-  }
+  // Future<List<BCard>> _query() async {
+  //   final Database myDB = await database;
+  //   final allRows = await myDB.query('business_card');
+  //   //print("printing all rows:");
+  //   //print(allRows.length);
+  //   return List.generate(allRows.length, (i) {
+  //     // my issue is that for some reason card_id and mobile_number is an int
+  //     // var v = allRows[i]['mobile_number'];
+  //     // print(v);
+  //     // if (v is String ) print("String");
+  //     BCard a = new BCard(allRows[i]['card_id'], allRows[i]['f_name'], allRows[i]['l_name'],
+  //       allRows[i]['mobile_number'],
+  //       allRows[i]['email_addr'], allRows[i]['street_addr'],
+  //       allRows[i]['website'], allRows[i]['linked_in'], 
+  //       allRows[i]['personal'], allRows[i]['notes'], 
+  //       allRows[i]['title'], allRows[i]['company']);
+  //     //print(a.personal);
+  //     return (a);
+  //   });
+  // }
 }
 
 

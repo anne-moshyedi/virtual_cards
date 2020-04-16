@@ -1,128 +1,248 @@
+import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:practice_app/contactExpanded.dart';
-import 'package:practice_app/main.dart';
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-
+import 'package:practice_app/businessCard.dart';
+import 'package:practice_app/main.dart';
+import 'package:practice_app/notes.dart';
+import 'package:practice_app/profile.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:sqflite/sqlite_api.dart';
+import 'package:practice_app/dogs.dart';
+import 'package:practice_app/contacts.dart';
 
 class Profile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Profile"),
+        title: Text("Contacts"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search), 
+            onPressed: () {
+              showSearch(
+                context: context, 
+                delegate: CustomSearchDelegate(ContactList())
+              );
+            },
+          ),
+        ],
       ),
-      body: new ListView.separated(
-        padding: const EdgeInsets.all(2),
-        itemCount: 2,
-        itemBuilder: (BuildContext context, int index)
-        { return ContactCard(); },
-        separatorBuilder: (BuildContext context, int index) =>const Divider() ),
+        body: new Material(
+          child: new Column(
+            children: <Widget>[
+              new Expanded(
+                flex: 2,
+                child: ContactList(),
+              ),
+             ]
+            )
+          ),
         drawer: MyDrawer(),
-        );
-  //      if I want to use .builder, take out padding and separatorBuilder
+    );
   }
+
+
 }
 
-
-class ContactCard extends StatelessWidget {
+class ContactList extends StatelessWidget{
   
-  final String card_id;
-  final String f_name;
-  final String l_name;
-  final String mobile_number;
-  final String email_addr;
-  final String street_addr;
-  final String website;
-  final String linked_in;
-  final String personal;
-  final String notes;
+  static final myDB = BusinessCard.instance;
 
-  const ContactCard({Key key, this.card_id, this.f_name, this.l_name, this.mobile_number, this.email_addr, this.street_addr, this.website, this.linked_in, this.personal, this.notes}) : super(key: key);
-
-    void _launchUrl(String url) async{
-    if(await canLaunch(url)){
-      await launch(url);
-    }
-    else{
-      throw 'Could not open URL';
-    }
-  }
+  //Future<Map<String, dynamic>> maps = myDB.queryAllRows();
+  
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      // When the user taps a contact, take them to the full contact page.
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ContactExpanded(contactInfo: 
-          ["Name", "Annie Moshyedi", "Mobile", "(301) 529-6024", "Email", "acm4xb@virginia.edu", 
-          "Address", "418 17th Street NW, Charlottesville, VA, 22903", 
-          "LinkedIn", "https://www.linkedin.com/in/anne-moshyedi/",
-          "Website", "https://anne-moshyedi.github.io/",
-          "Notes", "Met Annie at UVA career fair."] )),//List<String>.generate(10, (i) => "Item $i"),)),
-        );
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Icon(Icons.account_circle, size: 50),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Annie Moshyedi',
-                  style: Theme.of(context).textTheme.headline,
-                ),
-                Text(
-                  'Software Engineer',
-                )
-              ],
-            ),
-          ],
-        ),
-        SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        ),
-        SizedBox(height: 16),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            // mailto and tell don't work on simulator. need to run on physical device.
-            IconButton(
-              icon: Icon(Icons.email),
-              onPressed: () {_launchUrl('mailto:annemoshyedi@gmail.com');},
-            ),
-            IconButton(
-              icon: Icon(Icons.local_phone),
-              onPressed: () {_launchUrl('tel:+1 301 529 6024');},
-            ),
-            IconButton(
-              icon: Icon(Icons.device_hub),
-              onPressed: () {_launchUrl('https://www.linkedin.com/in/anne-moshyedi/');},
-            ),
-            IconButton(
-              icon: Icon(Icons.public),
-              onPressed: () {_launchUrl('https://anne-moshyedi.github.io/');},
-            ),
-          ],
-        ),
-      ],
-      ),
+    return FutureBuilder<List<BCard>>(
+      future: getInfo('1'),
+      builder: (context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.none:
+            return Text("none");
+          case ConnectionState.active:
+          case ConnectionState.waiting:
+            return Text("active and maybe waiting");
+          case ConnectionState.done:
+            return ListView.separated(
+                padding: const EdgeInsets.all(2),
+                itemCount: snapshot.data.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                    //height: 50,
+                    child: Center(child: snapshot.data[index]),
+                  );
+                },
+                separatorBuilder: (BuildContext contect, int index) => const Divider()
+              );
+          default:
+            return Text("done");
+        }
+      }
+    );
+    
+    // ListView.separated(
+    //   padding: const EdgeInsets.all(2),
+    //   itemCount: _countRows(),
+    //   itemBuilder: (BuildContext context, int index) {
+    //     return ContactCard(card_id: 'ok');
+    //   },
+    //   separatorBuilder: (BuildContext contect, int index) => const Divider()
+    // );
+  }
+  Future<int> _countRows() async {
+    // Assuming that the number of rows is the id for the last row.
+    return await myDB.queryRowCount();
+  }
+
+  // Future<List<BusinessCard>> getCardInfo() async {
+  //   final List<Map<String, dynamic>> maps = await myDB.queryAllRows();
+  //   return List.generate(maps.length, (i) {
+  //       return BusinessCard();
+  //     }
+  //   );
+  // }
+
+
+  Widget createListView(BuildContext context, AsyncSnapshot snapshot) {
+    List<String> values = snapshot.data;
+    return new ListView.builder(
+        itemCount: values.length,
+        itemBuilder: (BuildContext context, int index) {
+          return new Column(
+            children: <Widget>[
+              new ListTile(
+                title: new Text(values[index]),
+              ),
+              new Divider(height: 2.0,),
+            ],
+          );
+        },
     );
   }
 }
 
+class CustomSearchDelegate extends SearchDelegate {
+  // final UnmodifiableListView<ContactList> contacts;
+  final ContactList contacts;
+  CustomSearchDelegate(this.contacts);
 
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+        },
+      ),
+    ];
+  }
+
+  // button to close
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () {
+        close(context, null);
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    if (query.length < 3) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Center(
+            child: Text(
+              "Search term must be longer than two letters.",
+            ),
+          )
+        ],
+      );
+    }
+
+    
+    //Add the search term to the searchBloc. 
+    //The Bloc will then handle the searching and add the results to the searchResults stream.
+    //This is the equivalent of submitting the search term to whatever search service you are using
+    // InheritedBlocs.of(context)
+    //     .searchBloc
+    //     .searchTerm
+    //     .add(query);
+
+    return Column(
+      children: <Widget>[
+        //Build the results based on the searchResults stream in the searchBloc
+        // StreamBuilder(
+        //   stream: InheritedBlocs.of(context).searchBloc.searchResults,
+        //   builder: (context, AsyncSnapshot<List<Result>> snapshot) {
+        //     if (!snapshot.hasData) {
+        //       return Column(
+        //         crossAxisAlignment: CrossAxisAlignment.center,
+        //         mainAxisAlignment: MainAxisAlignment.center,
+        //         children: <Widget>[
+        //           Center(child: CircularProgressIndicator()),
+        //         ],
+        //       );
+        //     } else if (snapshot.data.length == 0) {
+        //       return Column(
+        //         children: <Widget>[
+        //           Text(
+        //             "No Results Found.",
+        //           ),
+        //         ],
+        //       );
+        //     } else {
+        //       var results = snapshot.data;
+        //       return ListView.builder(
+        //         itemCount: results.length,
+        //         itemBuilder: (context, index) {
+        //           var result = results[index];
+        //           return ListTile(
+        //             title: Text(result.title),
+        //           );
+        //         },
+        //       );
+        //     }
+        //   },
+        // ),
+      ],
+    );
+    
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    // This method is called everytime the search term changes. 
+    // If you want to add search suggestions as the user enters their search term, this is the place to do that.
+    return ContactList(
+      // stream: contacts,
+      // builder: (context, AsyncSnapshot<ContactList> snapshot),
+    );
+  }
+
+}
+
+  Future<List<BCard>> getInfo(personal) async {
+    final database = openDatabase(join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'), version: 1);
+    final Database myDB = await database;
+    //final allRows = await myDB.query('business_card');
+    final allRows = await myDB.rawQuery('SELECT * FROM business_card WHERE personal=$personal');
+    return List.generate(allRows.length, (i) {
+      // my issue is that for some reason card_id and mobile_number is an int
+      // var v = allRows[i]['mobile_number'];
+      // print(v);
+      // if (v is String ) print("String");
+      BCard a = new BCard(allRows[i]['card_id'], allRows[i]['f_name'], allRows[i]['l_name'],
+        allRows[i]['mobile_number'],
+        allRows[i]['email_addr'], allRows[i]['street_addr'],
+        allRows[i]['website'], allRows[i]['linked_in'], 
+        allRows[i]['personal'], allRows[i]['notes'],
+        allRows[i]['title'], allRows[i]['company']);
+      //print(a.personal);
+      return (a);
+    });
+  }

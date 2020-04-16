@@ -157,8 +157,10 @@ class BCard extends StatelessWidget{
   final String linked_in;
   final String personal;
   final String notes;
+  final String title;
+  final String company;
 
-  BCard(this.card_id, this.f_name, this.l_name, this.mobile_number, this.email_addr, this.street_addr, this.website, this.linked_in, this.personal, this.notes);
+  BCard(this.card_id, this.f_name, this.l_name, this.mobile_number, this.email_addr, this.street_addr, this.website, this.linked_in, this.personal, this.notes, this.title, this.company);
 
   Map<String, dynamic> toMap() {
     return {
@@ -172,6 +174,8 @@ class BCard extends StatelessWidget{
       'linked_in': linked_in,
       'personal': personal,
       'notes': notes,
+      'title': title,
+      'company': company
     };
   }
   // @override
@@ -195,7 +199,7 @@ class BCard extends StatelessWidget{
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => ContactExpanded(contactInfo: 
-          ["Name", '$f_name $l_name', "Mobile", '$mobile_number', "Email", "$email_addr", 
+          ["Name", '$f_name $l_name', "Title", "$title", "Company", "$company", "Mobile", '$mobile_number', "Email", "$email_addr", 
           "Address", "$street_addr", 
           "LinkedIn", "$linked_in",
           "Website", "$website",
@@ -221,7 +225,7 @@ class BCard extends StatelessWidget{
                   style: Theme.of(context).textTheme.headline,
                 ),
                 Text(
-                  'Software Engineer',
+                  '$title',
                 )
               ],
             ),

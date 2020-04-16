@@ -21,7 +21,7 @@ class Contacts extends StatelessWidget {
             onPressed: () {
               showSearch(
                 context: context, 
-                delegate: CustomSearchDelegate(ContactList())
+                delegate: CustomSearchDelegate(ContactList(''))
               );
             },
           ),
@@ -32,7 +32,7 @@ class Contacts extends StatelessWidget {
             children: <Widget>[
               new Expanded(
                 flex: 2,
-                child: ContactList(),
+                child: ContactList(''),
               ),
              ]
             )
@@ -47,20 +47,23 @@ class Contacts extends StatelessWidget {
 class ContactList extends StatelessWidget{
   
   static final myDB = BusinessCard.instance;
+  final String query;
+  ContactList(this.query);
 
   //Future<Map<String, dynamic>> maps = myDB.queryAllRows();
   
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<BCard>>(
-      future: _getInfo(),
+    //String searchQuery = ;
+        return FutureBuilder<List<BCard>>(
+          future: getInfo('0', query),
       builder: (context, snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.none:
             return Text("none");
           case ConnectionState.active:
           case ConnectionState.waiting:
-            return Text("active and maybe waiting");
+            //return Text("active and maybe waiting");
           case ConnectionState.done:
             return ListView.separated(
                 padding: const EdgeInsets.all(2),
@@ -88,10 +91,10 @@ class ContactList extends StatelessWidget{
     //   separatorBuilder: (BuildContext contect, int index) => const Divider()
     // );
   }
-  Future<int> _countRows() async {
-    // Assuming that the number of rows is the id for the last row.
-    return await myDB.queryRowCount();
-  }
+  // Future<int> _countRows() async {
+  //   // Assuming that the number of rows is the id for the last row.
+  //   return await myDB.queryRowCount();
+  // }
 
   // Future<List<BusinessCard>> getCardInfo() async {
   //   final List<Map<String, dynamic>> maps = await myDB.queryAllRows();
@@ -171,10 +174,13 @@ class CustomSearchDelegate extends SearchDelegate {
     //     .searchBloc
     //     .searchTerm
     //     .add(query);
-
     return Column(
       children: <Widget>[
-        //Build the results based on the searchResults stream in the searchBloc
+        new Expanded(
+                flex: 2,
+                child: ContactList(query),
+              ),
+        // Build the results based on the searchResults stream in the searchBloc
         // StreamBuilder(
         //   stream: InheritedBlocs.of(context).searchBloc.searchResults,
         //   builder: (context, AsyncSnapshot<List<Result>> snapshot) {
@@ -217,7 +223,7 @@ class CustomSearchDelegate extends SearchDelegate {
   Widget buildSuggestions(BuildContext context) {
     // This method is called everytime the search term changes. 
     // If you want to add search suggestions as the user enters their search term, this is the place to do that.
-    return ContactList(
+    return ContactList(''
       // stream: contacts,
       // builder: (context, AsyncSnapshot<ContactList> snapshot),
     );
@@ -225,12 +231,14 @@ class CustomSearchDelegate extends SearchDelegate {
 
 }
 
-  Future<List<BCard>> _getInfo() async {
+  Future<List<BCard>> getInfo(personal, [String searchQuery]) async {
     final database = openDatabase(join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'), version: 1);
     final Database myDB = await database;
-    final allRows = await myDB.query('business_card');
-    //print("printing all rows:");
-    //print(allRows.length);
+    //final allRows = await myDB.query('business_card');
+    //if (searchQuery == '')
+      //final allRows = await myDB.rawQuery('SELECT * FROM business_card WHERE personal=$personal');
+    
+    final allRows = await myDB.rawQuery('SELECT * FROM business_card WHERE personal = $personal AND (f_name LIKE "%$searchQuery%" OR l_name LIKE "%$searchQuery%" OR mobile_number LIKE "%$searchQuery%"  OR email_addr LIKE "%$searchQuery%" OR street_addr LIKE "%$searchQuery%" OR notes LIKE "%$searchQuery%" OR title LIKE "%$searchQuery%" OR company LIKE "%$searchQuery%")');
     return List.generate(allRows.length, (i) {
       // my issue is that for some reason card_id and mobile_number is an int
       // var v = allRows[i]['mobile_number'];
@@ -240,8 +248,31 @@ class CustomSearchDelegate extends SearchDelegate {
         allRows[i]['mobile_number'],
         allRows[i]['email_addr'], allRows[i]['street_addr'],
         allRows[i]['website'], allRows[i]['linked_in'], 
-        allRows[i]['personal'], allRows[i]['notes'], );
+        allRows[i]['personal'], allRows[i]['notes'],
+        allRows[i]['title'], allRows[i]['company']);
       //print(a.personal);
       return (a);
     });
   }
+
+
+  // class InheritedBlocs extends InheritedWidget {
+  // InheritedBlocs(
+  //     {Key key,
+  //     this.searchBloc,
+  //     this.child})
+  //     : super(key: key, child: child);
+
+  // final Widget child;
+  // final SearchBloc searchBloc;
+  
+  //   static InheritedBlocs of(BuildContext context) {
+  //     return (context.inheritFromWidgetOfExactType(InheritedBlocs)
+  //         as InheritedBlocs);
+  //   }
+  
+  //   @override
+  //   bool updateShouldNotify(InheritedBlocs oldWidget) {
+  //     return true;
+  //   }
+  // }
