@@ -21,7 +21,7 @@ class Contacts extends StatelessWidget {
             onPressed: () {
               showSearch(
                 context: context, 
-                delegate: CustomSearchDelegate(ContactList(''))
+                delegate: CustomSearchDelegate(ContactList('',''), '0')
               );
             },
           ),
@@ -32,7 +32,7 @@ class Contacts extends StatelessWidget {
             children: <Widget>[
               new Expanded(
                 flex: 2,
-                child: ContactList(''),
+                child: ContactList('0',''),
               ),
              ]
             )
@@ -47,8 +47,9 @@ class Contacts extends StatelessWidget {
 class ContactList extends StatelessWidget{
   
   static final myDB = BusinessCard.instance;
+  final String personal;
   final String query;
-  ContactList(this.query);
+  ContactList(this.personal, this.query);
 
   //Future<Map<String, dynamic>> maps = myDB.queryAllRows();
   
@@ -56,7 +57,7 @@ class ContactList extends StatelessWidget{
   Widget build(BuildContext context) {
     //String searchQuery = ;
         return FutureBuilder<List<BCard>>(
-          future: getInfo('0', query),
+          future: getInfo(personal, query),
       builder: (context, snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.none:
@@ -126,7 +127,8 @@ class ContactList extends StatelessWidget{
 class CustomSearchDelegate extends SearchDelegate {
   // final UnmodifiableListView<ContactList> contacts;
   final ContactList contacts;
-  CustomSearchDelegate(this.contacts);
+  final String personal;
+  CustomSearchDelegate(this.contacts, this.personal);
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -178,7 +180,7 @@ class CustomSearchDelegate extends SearchDelegate {
       children: <Widget>[
         new Expanded(
                 flex: 2,
-                child: ContactList(query),
+                child: ContactList(personal, query),
               ),
         // Build the results based on the searchResults stream in the searchBloc
         // StreamBuilder(
@@ -223,7 +225,7 @@ class CustomSearchDelegate extends SearchDelegate {
   Widget buildSuggestions(BuildContext context) {
     // This method is called everytime the search term changes. 
     // If you want to add search suggestions as the user enters their search term, this is the place to do that.
-    return ContactList(''
+    return ContactList(personal, ''
       // stream: contacts,
       // builder: (context, AsyncSnapshot<ContactList> snapshot),
     );
@@ -237,8 +239,7 @@ class CustomSearchDelegate extends SearchDelegate {
     //final allRows = await myDB.query('business_card');
     //if (searchQuery == '')
       //final allRows = await myDB.rawQuery('SELECT * FROM business_card WHERE personal=$personal');
-    
-    final allRows = await myDB.rawQuery('SELECT * FROM business_card WHERE personal = $personal AND (f_name LIKE "%$searchQuery%" OR l_name LIKE "%$searchQuery%" OR mobile_number LIKE "%$searchQuery%"  OR email_addr LIKE "%$searchQuery%" OR street_addr LIKE "%$searchQuery%" OR notes LIKE "%$searchQuery%" OR title LIKE "%$searchQuery%" OR company LIKE "%$searchQuery%")');
+    final allRows = await myDB.rawQuery('SELECT * FROM business_card WHERE (personal = $personal) AND (f_name LIKE "%$searchQuery%" OR l_name LIKE "%$searchQuery%" OR mobile_number LIKE "%$searchQuery%"  OR email_addr LIKE "%$searchQuery%" OR street_addr LIKE "%$searchQuery%" OR notes LIKE "%$searchQuery%" OR title LIKE "%$searchQuery%" OR company LIKE "%$searchQuery%")');
     return List.generate(allRows.length, (i) {
       // my issue is that for some reason card_id and mobile_number is an int
       // var v = allRows[i]['mobile_number'];

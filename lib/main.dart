@@ -3,6 +3,7 @@ import 'package:flutter/semantics.dart';
 import 'package:path/path.dart';
 import 'package:practice_app/businessCard.dart';
 import 'package:practice_app/contacts.dart';
+import 'package:practice_app/dogs.dart';
 import 'package:practice_app/profile.dart';
 import 'package:practice_app/search.dart';
 import 'package:practice_app/events.dart';
@@ -116,13 +117,22 @@ class MyDrawer extends StatelessWidget {
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
-              
-              child: Text('Virtual Cards',
+
+              child: ListTile(
+                title:Text('Virtual Cards',
                 style: TextStyle(
                 color: Colors.white,
                 fontSize: 24
+
                 )
               ),
+              onTap: () {
+                 Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MyApp()),
+                );
+              }
+            ),
               decoration: BoxDecoration(
                 color: Colors.cyan,
               ),
