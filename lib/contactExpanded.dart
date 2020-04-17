@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:practice_app/main.dart';
 import 'package:flutter/foundation.dart';
 
 class ContactExpanded extends StatelessWidget {
@@ -30,28 +29,6 @@ class ContactExpanded extends StatelessWidget {
       ); 
   }
 }
-
-// class ContactExpanded extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//         appBar: AppBar(
-//           title: Text("Annie Moshyedi"),
-//         ),
-//         body: new ListView.separated(
-//           padding: const EdgeInsets.all(2),
-//           itemCount: 10,
-//           itemBuilder: (BuildContext context, int index)
-//             { return ListTile(
-//               title: Text("Name"),
-//               subtitle: Text("Annie Moshyedi"),
-//             );
-//             },
-//           separatorBuilder: (BuildContext context, int index) =>const Divider() 
-//         ),
-//       ); 
-//   }
-// }
 
 /// The base class for the different types of items the list can contain.
 abstract class ListItem {

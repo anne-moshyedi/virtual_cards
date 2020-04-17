@@ -1,7 +1,4 @@
-import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
-import 'package:practice_app/businessCard.dart';
 import 'package:practice_app/main.dart';
 import 'package:practice_app/contacts.dart';
 
