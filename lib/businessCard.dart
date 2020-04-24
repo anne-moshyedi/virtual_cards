@@ -120,11 +120,15 @@ class BCard extends StatelessWidget{
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => ContactExpanded(contactInfo: 
-          ["Name", '$f_name $l_name', "Title", "$title", "Company", "$company", "Mobile", '$mobile_number', "Email", "$email_addr", 
+          ["Name", '$f_name $l_name', 
+          "Title", "$title", 
+          "Company", "$company", 
+          "Mobile", '$mobile_number', 
+          "Email", "$email_addr", 
           "Address", "$street_addr", 
           "LinkedIn", "$linked_in",
           "Website", "$website",
-          "Notes", "$notes"] )),//List<String>.generate(10, (i) => "Item $i"),)),
+          "Notes", "$notes"], id: card_id)),//List<String>.generate(10, (i) => "Item $i"),)),
         );
       },
       child: Column(
@@ -160,7 +164,7 @@ class BCard extends StatelessWidget{
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            // mailto and tell don't work on simulator. need to run on physical device.
+            // mailto and tel don't work on simulator. need to run on physical device.
             IconButton(
               icon: Icon(Icons.email),
               onPressed: () {_launchUrl('mailto:$email_addr');},
@@ -183,5 +187,4 @@ class BCard extends StatelessWidget{
       ),
     );
   }
-
 }

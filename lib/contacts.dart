@@ -202,7 +202,7 @@ class CustomSearchDelegate extends SearchDelegate {
   Future<List<BCard>> getInfo(personal, [String searchQuery]) async {
     final database = openDatabase(join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'), version: 1);
     final Database myDB = await database;
-    final allRows = await myDB.rawQuery('SELECT * FROM business_card WHERE (personal = $personal) AND (f_name LIKE "%$searchQuery%" OR l_name LIKE "%$searchQuery%" OR mobile_number LIKE "%$searchQuery%"  OR email_addr LIKE "%$searchQuery%" OR street_addr LIKE "%$searchQuery%" OR notes LIKE "%$searchQuery%" OR title LIKE "%$searchQuery%" OR company LIKE "%$searchQuery%")');
+    final allRows = await myDB.rawQuery('SELECT * FROM business_card WHERE (personal = $personal) AND (f_name LIKE "%$searchQuery%" OR l_name LIKE "%$searchQuery%" OR mobile_number LIKE "%$searchQuery%"  OR email_addr LIKE "%$searchQuery%" OR street_addr LIKE "%$searchQuery%" OR notes LIKE "%$searchQuery%" OR title LIKE "%$searchQuery%" OR company LIKE "%$searchQuery%") ORDER BY f_name, l_name');
     return List.generate(allRows.length, (i) {
       BCard a = new BCard(allRows[i]['card_id'], allRows[i]['f_name'], allRows[i]['l_name'],
         allRows[i]['mobile_number'],

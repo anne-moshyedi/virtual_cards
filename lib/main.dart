@@ -63,7 +63,6 @@ class MyDrawer extends StatelessWidget {
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
-
               child: ListTile(
                 title:Text('Virtual Cards',
                 style: TextStyle(
