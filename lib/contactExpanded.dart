@@ -5,6 +5,7 @@ import 'package:practice_app/contacts.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:practice_app/databaseConnect.dart';
 
 
 class ContactExpanded extends StatelessWidget {
@@ -170,36 +171,3 @@ class MessageItem implements ListItem {
   Widget buildSubtitle(BuildContext context) => Text(body);
 }
 
-Future<void> deleteContact(String id) async {
- final database = openDatabase(join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'), version: 1);
-
-  // Get a reference to the database.
-  final db = await database;
-
-  // Remove the contact from the Database.
-  await db.delete(
-    'business_card',
-    // Use a `where` clause to delete a specific dog.
-    where: "card_id = ?",
-    // Pass the Dog's id as a whereArg to prevent SQL injection.
-    whereArgs: [id],
-  );
-}
-
-Future<void> updateNotes(String notes, String id) async {
-  // Get a reference to the database.
-  final database = openDatabase(join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'), version: 1);
-
-
-  final db = await database;
-  print(notes);
-  // Update the given Dog.
-  await db.update(
-    'business_card',
-    {'notes': '$notes'},
-    // Ensure that the Dog has a matching id.
-    where: "card_id = ?",
-    // Pass the Dog's id as a whereArg to prevent SQL injection.
-    whereArgs: [id],
-  );
-}

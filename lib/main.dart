@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:practice_app/contacts.dart';
+import 'package:practice_app/login.dart';
 import 'package:practice_app/profile.dart';
 import 'package:practice_app/search.dart';
 import 'package:practice_app/events.dart';
@@ -47,6 +48,12 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text('Welcome to your virtual business card app!'),
+            FlatButton (
+              child: Text("click to login"), 
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Login()));
+              }
+              )
           ],
         ),
       ),
