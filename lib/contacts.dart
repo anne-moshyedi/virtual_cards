@@ -37,8 +37,6 @@ class Contacts extends StatelessWidget {
         drawer: MyDrawer(),
     );
   }
-
-
 }
 
 class ContactList extends StatelessWidget{

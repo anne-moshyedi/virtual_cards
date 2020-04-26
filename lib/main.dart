@@ -21,7 +21,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.cyan,
         accentColor: Colors.cyan[100],
       ),
-      home: MyHomePage(title: 'Virtual Cards'),
+      home: Login(false),
+      //home: MyHomePage(title: 'Virtual Cards'),
     );
   }
 }
@@ -51,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
             FlatButton (
               child: Text("click to login"), 
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => Login()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Login(false)));
               }
               )
           ],

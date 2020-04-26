@@ -6,13 +6,22 @@ import 'package:practice_app/main.dart';
 import 'package:practice_app/databaseConnect.dart';
 
 class Login extends StatefulWidget {
+  final bool error;
+
+  const Login(this.error);
+  
+
   @override
-  _LoginState createState() => _LoginState();
+  _LoginState createState() => _LoginState(error);
 }
 
 class _LoginState extends State<Login> {
   String _username, _password;
   bool _rememberMe = false;
+
+  final bool error;
+
+  _LoginState(this.error);
 
     Widget _buildEmail() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start,
@@ -159,7 +168,7 @@ class _LoginState extends State<Login> {
       child: RaisedButton(
         elevation: 5.0,
         onPressed: () => {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => processLogin(_username, _password)))
+                Navigator.push(context, MaterialPageRoute(builder: (context) => LoginResponse(_username, _password))),
               },
         //processLogin(_username, _password),
         padding: EdgeInsets.all(15.0),
@@ -228,6 +237,31 @@ class _LoginState extends State<Login> {
           ),
         ),
       ),
+    );
+  }
+
+    Widget _buildErrorMsg() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Text(
+          'Incorrect username or password',
+          style: TextStyle(
+            color: Colors.red[700],
+            fontWeight: FontWeight.bold,
+          ), textAlign: TextAlign.center,
+        ),
+        // SizedBox(height: 20.0),
+        // Text(
+        //   'Sign in with',
+        //   style: TextStyle(
+        //     color: Colors.white,
+        //     fontWeight: FontWeight.bold
+        //     //fontFamily: 'OpenSans',
+        // ),
+        // ),
+      ],
     );
   }
 
@@ -316,6 +350,8 @@ class _LoginState extends State<Login> {
                 vertical: 120.0,
                 ),
                 child: Column(children: <Widget>[
+                if (error == true) _buildErrorMsg(),
+                SizedBox(height: 10),
                   Text(
                     'Sign In',
                     style: TextStyle(
