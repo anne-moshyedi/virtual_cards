@@ -27,7 +27,7 @@ Future<User> getUser(String user, String password) async {
     //return;
     return new User.fromMap(res.first);
   }
-  return;
+  return new User.fromMap(res.first);
 }
 
 Future<List<BCard>> getInfo(personal, [String searchQuery]) async {
@@ -53,7 +53,7 @@ Future<List<BCard>> getInfo(personal, [String searchQuery]) async {
 
 Future<void> deleteContact(String id) async {
  if (globals.isLoggedIn == false || globals.currentUser == null) return null;
-
+var username = globals.currentUser.username;
  final database = openDatabase(join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'), version: 1);
 
   // Get a reference to the database.
@@ -61,11 +61,11 @@ Future<void> deleteContact(String id) async {
 
   // Remove the contact from the Database.
   await db.delete(
-    'business_card',
+    'user_has_cards',
     // Use a `where` clause to delete a specific dog.
-    where: "card_id = ?",
+    where: "id = ? AND username = ?",
     // Pass the Dog's id as a whereArg to prevent SQL injection.
-    whereArgs: [id],
+    whereArgs: [id, username],
   );
 }
 
@@ -85,6 +85,56 @@ Future<void> updateNotes(String notes, String id) async {
     where: "id = ? AND username = ?",
     // Pass the Dog's id as a whereArg to prevent SQL injection.
     whereArgs: [id, username],
+  );
+}
+
+Future<void> update(String updatedInfo, String field, String id) async {
+  if (globals.isLoggedIn == false || globals.currentUser == null) return null;
+  // Get a reference to the database.
+  final database = openDatabase(join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'), version: 1);
+  var attribute;
+  switch (field) {
+    case "f_name":
+      attribute = "l_name";
+      break;
+    case "l_name":
+      attribute = "l_name";
+      break;
+    case "Title":
+      attribute = "title";
+      break;
+    case "Company":
+      attribute = "company";
+      break;
+    case "Mobile":
+      attribute = "mobile_number";
+      break;
+    case "Email":
+      attribute = "email_addr";
+      break;
+    case "Address":
+      attribute = "street_addr";
+      break;
+    case "LinkedIn":
+      attribute = "linked_in";
+      break;
+    case "Website":
+      attribute = "website";
+      break;
+    default:
+      break;
+  }
+  //var username = globals.currentUser.username;
+  final db = await database;
+  //print(notes);
+  // Update the given Dog.
+  await db.update(
+    'business_card',
+    {'$attribute': '$updatedInfo'},
+    // Ensure that the Dog has a matching id.
+    where: "card_id = ?",
+    // Pass the Dog's id as a whereArg to prevent SQL injection.
+    whereArgs: [id],
   );
 }
 

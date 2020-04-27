@@ -6,20 +6,41 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:practice_app/databaseConnect.dart';
+import 'package:practice_app/contactExpandedEditable.dart';
 
 
 class ContactExpanded extends StatelessWidget {
   final List<String> contactInfo;
   final String id;
+  final List<String> names;
+  final String personal;
 
-  const ContactExpanded({Key key, this.contactInfo, this.id}) : super(key: key);
+  //const ContactExpanded(this.contactInfo, this.id);
+
+  const ContactExpanded({Key key, this.contactInfo, this.id, this.names, this.personal}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final int len = (contactInfo.length/2).floor();
+    bool editable;
+    if (personal == '1') editable = true;
+    else editable = false;
     return Scaffold(
         appBar: AppBar(
           title: Text(contactInfo[1]),
+          actions: [
+            Visibility(
+              visible: editable,
+              child:
+          IconButton(
+            //child: Text("Edit"), 
+            icon: Icon(Icons.edit),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ContactExpandedEditable(contactInfo, id, names)));
+            },
+          ),
+            )
+        ],
         ),
         body: new Material (
           child: new Column (

@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:practice_app/contacts.dart';
 import 'package:practice_app/login.dart';
+import 'package:practice_app/loginResponse.dart';
 import 'package:practice_app/profile.dart';
 import 'package:practice_app/search.dart';
 import 'package:practice_app/events.dart';
 import 'package:practice_app/notes.dart';
 import 'package:practice_app/settings.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:practice_app/globals.dart' as globals;
 
 
 void main() => runApp(MyApp());
@@ -82,7 +84,7 @@ class MyDrawer extends StatelessWidget {
               onTap: () {
                  Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => MyApp()),
+                  MaterialPageRoute(builder: (context) => LoginResponse(globals.currentUser.username, globals.currentUser.password)),
                 );
               }
             ),
@@ -147,6 +149,16 @@ class MyDrawer extends StatelessWidget {
                  Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => Settings()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.exit_to_app, color: Colors.red[600]),
+              title: Text('Logout', style: TextStyle(color: Colors.red[600]),),
+              onTap: () {
+                 Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MyApp()),
                 );
               },
             ),

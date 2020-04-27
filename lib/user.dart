@@ -6,14 +6,16 @@ class User extends StatelessWidget{
   String _password;
   String f_name;
   String l_name;
+  String email;
 
-  User(this.username, this._password, this.f_name, this.l_name);
+  User(this.username, this._password, this.f_name, this.l_name, this.email);
 
   User.fromMap(dynamic obj) {
     this.username = obj['username'];
     this._password = obj['password'];
     this.f_name = obj['f_name'];
     this.l_name = obj['l_name'];
+    this.email = obj['user_email'];
   }
   //String get username => username;
   String get password => _password;
@@ -23,6 +25,7 @@ class User extends StatelessWidget{
     map["password"] = _password;
     map["f_name"] = f_name;
     map["l_name"] = l_name;
+    map["user_email"] = email;
     return map;
   }
   @override

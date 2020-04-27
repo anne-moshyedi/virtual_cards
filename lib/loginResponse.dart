@@ -81,7 +81,7 @@ class LoginResp extends StatelessWidget{
             return Text("active and maybe waiting");
           case ConnectionState.done:
             return Scaffold(
-      appBar: AppBar(title: Text("Welcome!")),
+      appBar: AppBar(title: Text("Home Page")),
       body: Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[

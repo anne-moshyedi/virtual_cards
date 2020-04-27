@@ -128,7 +128,7 @@ class BCard extends StatelessWidget{
           "Address", "$street_addr", 
           "LinkedIn", "$linked_in",
           "Website", "$website",
-          "Notes", "$notes"], id: card_id)),//List<String>.generate(10, (i) => "Item $i"),)),
+          "Notes", "$notes"], id: card_id, names: ['First Name', '$f_name', 'Last Name', '$l_name'], personal: personal)),//List<String>.generate(10, (i) => "Item $i"),)),
         );
       },
       child: Column(
