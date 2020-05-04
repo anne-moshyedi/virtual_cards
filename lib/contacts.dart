@@ -27,6 +27,24 @@ class Contacts extends StatelessWidget {
         body: new Material(
           child: new Column(
             children: <Widget>[
+              Row(
+                children: <Widget> [
+                  Expanded(
+                    child: SizedBox(
+                    width: double.infinity,
+                    child: RaisedButton.icon(
+                      icon: Icon(Icons.add),
+                      label:
+                        Text("Add a contact"),
+                      color: Colors.cyan[100],
+                      onPressed: () {
+                        //Navigator.push(context, MaterialPageRoute(builder: (context) => CreateContact()));
+                      },
+                      ),
+                      )
+                    )
+                  ]
+                ),
               new Expanded(
                 flex: 2,
                 child: ContactList('0',''),

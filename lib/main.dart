@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:practice_app/contacts.dart';
+import 'package:practice_app/databaseConnect.dart';
 import 'package:practice_app/login.dart';
 import 'package:practice_app/loginResponse.dart';
 import 'package:practice_app/profile.dart';
@@ -39,8 +40,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final Drawer drawer = const Drawer();
-  final database = openDatabase(join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'), version: 1);
+  // final Drawer drawer = const Drawer();
+  // final database = db();
+  //final database = openDatabase(join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'), version: 1);
 
   @override
   Widget build(BuildContext context) {

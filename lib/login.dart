@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:practice_app/loginResponse.dart';
 import 'package:practice_app/main.dart';
 import 'package:practice_app/databaseConnect.dart';
+import 'package:practice_app/signUp.dart';
 
 class Login extends StatefulWidget {
   final bool error;
@@ -289,9 +290,15 @@ class _LoginState extends State<Login> {
   }
 
   Widget _buildSignupBtn() {
-    return GestureDetector(
-      onTap: () => print('Sign Up Button Pressed'),
+    return 
+    GestureDetector(
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SignUp())),
+      //onTap: () => print('Sign Up Button Pressed'),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 25.0),
+        width: double.infinity,
       child: RichText(
+        textAlign: TextAlign.center,
         text: TextSpan(
           children: [
             TextSpan(
@@ -313,6 +320,7 @@ class _LoginState extends State<Login> {
           ],
         ),
       ),
+      )
     );
   }
 
@@ -381,7 +389,7 @@ class _LoginState extends State<Login> {
                     // implement these later on
                     // _buildSignInWith(),
                     // _buildSocialBtnRow(),
-                    // _buildSignupBtn(),
+                    _buildSignupBtn(),
                   ],
                   )
                 ],)

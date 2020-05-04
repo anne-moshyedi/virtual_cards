@@ -4,16 +4,27 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:practice_app/businessCard.dart';
 import 'package:practice_app/main.dart';
+import 'package:practice_app/signUp.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:practice_app/user.dart';
 import 'package:practice_app/globals.dart' as globals;
 
 class DatabaseConnect {
- final database = openDatabase(join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'), version: 1);
+ //final database = openDatabase(join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'), version: 1);
+}
+
+
+Future<Database> getDatabase() async {
+  // var path = await getDatabasesPath();
+  //print(path);
+  var path = '/Users/anniemoshyedi/Desktop/practice_app/lib/';
+  final database = openDatabase(join(path, 'practice_app_data.db'), version: 1);
+  return database;
 }
 
 Future<User> getUser(String user, String password) async {
-  final database = openDatabase(join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'), version: 1);
+  final database = getDatabase();
+  //final database = openDatabase(join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'), version: 1);
   // Get a reference to the database.
   final db = await database;
   var res = await db.rawQuery("SELECT * FROM user WHERE username = '$user' and password = '$password'");
@@ -22,7 +33,7 @@ Future<User> getUser(String user, String password) async {
     
     globals.isLoggedIn = true;
     globals.currentUser = User.fromMap(res.first);
-    print("creating user global");
+    //print("creating user global");
     //call login response and go to a welcome page or something 
     //return;
     return new User.fromMap(res.first);
@@ -33,7 +44,8 @@ Future<User> getUser(String user, String password) async {
 Future<List<BCard>> getInfo(personal, [String searchQuery]) async {
     if (globals.isLoggedIn == false || globals.currentUser == null) return null;
     var username = globals.currentUser.username;
-    final database = openDatabase(join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'), version: 1);
+    //final database = openDatabase(join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'), version: 1);
+    final database = getDatabase();
     final Database myDB = await database;
     final allRows = await myDB.rawQuery('SELECT * FROM business_card b JOIN user_has_cards u ON b.card_id = u.id WHERE (f_name LIKE "%$searchQuery%" OR l_name LIKE "%$searchQuery%" OR mobile_number LIKE "%$searchQuery%"  OR email_addr LIKE "%$searchQuery%" OR street_addr LIKE "%$searchQuery%" OR notes LIKE "%$searchQuery%" OR title LIKE "%$searchQuery%" OR company LIKE "%$searchQuery%") AND (card_id IN (SELECT id FROM user_has_cards WHERE username = "$username" AND personal = $personal)) AND username = "$username" ORDER BY f_name, l_name');
     //print('SELECT * FROM business_card b JOIN user_has_cards u ON b.card_id = u.id WHERE (f_name LIKE "%$searchQuery%" OR l_name LIKE "%$searchQuery%" OR mobile_number LIKE "%$searchQuery%"  OR email_addr LIKE "%$searchQuery%" OR street_addr LIKE "%$searchQuery%" OR notes LIKE "%$searchQuery%" OR title LIKE "%$searchQuery%" OR company LIKE "%$searchQuery%") AND (card_id IN (SELECT card_id FROM user_has_cards WHERE username = "$username" AND personal = $personal)) AND username = "$username" ORDER BY f_name, l_name');
@@ -54,8 +66,8 @@ Future<List<BCard>> getInfo(personal, [String searchQuery]) async {
 Future<void> deleteContact(String id) async {
  if (globals.isLoggedIn == false || globals.currentUser == null) return null;
 var username = globals.currentUser.username;
- final database = openDatabase(join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'), version: 1);
-
+ //final database = openDatabase(join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'), version: 1);
+  final database = getDatabase();
   // Get a reference to the database.
   final db = await database;
 
@@ -72,7 +84,8 @@ var username = globals.currentUser.username;
 Future<void> updateNotes(String notes, String id) async {
   if (globals.isLoggedIn == false || globals.currentUser == null) return null;
   // Get a reference to the database.
-  final database = openDatabase(join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'), version: 1);
+  //final database = openDatabase(join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'), version: 1);
+  final database = getDatabase();
 
   var username = globals.currentUser.username;
   final db = await database;
@@ -91,7 +104,8 @@ Future<void> updateNotes(String notes, String id) async {
 Future<void> update(String updatedInfo, String field, String id) async {
   if (globals.isLoggedIn == false || globals.currentUser == null) return null;
   // Get a reference to the database.
-  final database = openDatabase(join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'), version: 1);
+  //final database = openDatabase(join('/Users/anniemoshyedi/Desktop/practice_app/lib/', 'practice_app_data.db'), version: 1);
+  final database = getDatabase();
   var attribute;
   switch (field) {
     case "f_name":
@@ -140,3 +154,28 @@ Future<void> update(String updatedInfo, String field, String id) async {
 
 // now, on the login, go to the main page and pass the user
 
+Future<void> createCard(Map<String, String> contactInfo) async{
+  print("good in createCard");
+  final database = await getDatabase();
+  var recentCardId = await database.rawQuery('SELECT recent_id FROM global');
+  int newCardId = (recentCardId[0]["recent_id"] + 1);
+  String cardId = newCardId.toString();
+  await database.update('global', {'recent_id': newCardId});
+  contactInfo.remove("");
+  contactInfo["card_id"] = cardId;
+  print(contactInfo);
+  database.insert('business_card', contactInfo);
+  // update user_has_cards table
+  String username = globals.currentUser.username;
+  database.insert('user_has_cards', {'username': username, 'id': cardId, 'personal': 1});
+}
+
+Future<void> createUser(Map<String, String> userInfo) async{
+  final database = await getDatabase();
+  try{
+  database.insert('user', userInfo);
+  }
+  catch (error) {
+    SignUp(usernameError: true);
+  }
+}
