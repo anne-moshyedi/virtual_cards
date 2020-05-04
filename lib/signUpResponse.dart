@@ -37,10 +37,10 @@ class SignUpResp extends StatelessWidget{
 // first, create the user, then call login page  
   @override
   Widget build(BuildContext context) {
-    print(username);
-    //if (username == null || password == null || email == null) return SignUp(requiredError: true);
+    if (username == null || password == null || email == null) return SignUp(requiredError: true);
+    else{
     createUser({'username': username, 'password': password, 'user_email': email, 'f_name': f_name, 'l_name': l_name});
-    return LoginResponse(username, password);
+    return LoginResponse(username, password);}
     // FutureBuilder<User>(
     //   future: getUser(username, password),
     //   builder: (context, snapshot) {
